@@ -1,0 +1,7 @@
+#My VScode auto generated folder
+.vscode/
+
+#Node modukes
+node_modules/
+
+#env
