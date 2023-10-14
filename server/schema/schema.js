@@ -4,6 +4,7 @@ const {
   GraphQLString,
   GraphQLSchema,
   GraphQLNonNull,
+  GraphQLEnumType,
   GraphQLList } = require('graphql');
 // ! Mongoose models for querying the database
 const Project = require('../models/project');
@@ -32,7 +33,7 @@ const ProjectType = new GraphQLObjectType({
     client: {
       type: ClientType,
       resolve(parent, args) {
-        return Clients.findById(parent.clientId);
+        return Client.findById(parent.clientId);
       }
     }
   }),
@@ -101,6 +102,46 @@ const mutation = new GraphQLObjectType({
       },
     },
     // Delete a client
+    deleteClient: {
+      type: ClientType,
+      args: {
+        id: { type: GraphQLNonNull(GraphQLID) },
+      },
+      resolve(parent, args) {
+        return Client.findByIdAndRemove(args.id);
+      }
+    },
+    // TODO add support function for Updating client here
+    // Add Project
+    addProject: {
+      type: ProjectType,
+      args: {
+        name: { type: GraphQLNonNull(GraphQLString) },
+        description: { type: GraphQLNonNull(GraphQLString) },
+        status: {
+          type: new GraphQLEnumType({
+            name: 'ProjectStatus',
+            values: {
+              'new': { value: 'Not Started' },
+              'progress': { value: 'In Progress' },
+              'completed': { value: 'Completed' },
+            },
+          }),
+          defaultValue: 'Not Started',
+        },
+        clientId: { type: GraphQLNonNull(GraphQLID) },
+      },
+      //! Same as with our client creation 
+      resolve(parent, args) {
+        const project = new Project({
+          name: args.name,
+          description: args.description,
+          status: args.status,
+          clientId: args.clientId,
+        });
+        return project.save();
+      },
+    },
   },
 });
 module.exports = new GraphQLSchema({ query: RootQuery, mutation })
