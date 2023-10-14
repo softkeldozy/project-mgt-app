@@ -1,6 +1,11 @@
-const { projects, clients } = require('../sampleData.js');
-const { GraphQLObjectType, GraphQLID, GraphQLString, GraphQLSchema, GraphQLList } = require('graphql');
-// ! Mongoose models
+const {
+  GraphQLObjectType,
+  GraphQLID,
+  GraphQLString,
+  GraphQLSchema,
+  GraphQLNonNull,
+  GraphQLList } = require('graphql');
+// ! Mongoose models for querying the database
 const Project = require('../models/project');
 const Client = require('../models/Client');
 
@@ -27,7 +32,7 @@ const ProjectType = new GraphQLObjectType({
     client: {
       type: ClientType,
       resolve(parent, args) {
-        return clients.find(client => client.id === parent.clientId);
+        return Clients.findById(parent.clientId);
       }
     }
   }),
@@ -41,7 +46,7 @@ const RootQuery = new GraphQLObjectType({
     projects: {
       type: new GraphQLList(ProjectType),
       resolve(parent, args) {
-        return projects;
+        return Project.find(); //! returning everything from project
       }
     },
     // 
@@ -50,14 +55,14 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       // *our return where ever we want to respond with
       resolve(parent, args) {
-        return projects.find(project => project.id === args.id);
+        return Project.findById(args.id);
       }
     },
     // Query to get all Clients
     clients: {
       type: new GraphQLList(ClientType),
       resolve(parent, args) {
-        return clients;
+        return Client.find();
       }
     },
     // 
@@ -66,9 +71,36 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
       // *our return where ever we want to respond with
       resolve(parent, args) {
-        return clients.find(client => client.id === args.id);
+        return Clients.findById(args.id);
       }
     }
   }
 });
-module.exports = new GraphQLSchema({ query: RootQuery })
+//* Mutations
+const mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    // Add a Client 
+    addClient: {
+      type: ClientType,
+      args: {
+        // ? Using GraphQLNonNull to make sure an empty string isn't submitted
+        name: { type: GraphQLNonNull(GraphQLString) },
+        email: { type: GraphQLNonNull(GraphQLString) },
+        phone: { type: GraphQLNonNull(GraphQLString) },
+      },
+      // This is what you get back from your query 
+      resolve(parent, args) {
+        // * Here a new client is being created using the mongoose model, passing in properties and key values which will be coming from our GraphQL query (ultimately front-end form input elements) 
+        const client = new Client({
+          name: args.name,
+          email: args.email,
+          phone: args.phone,
+        });
+        return client.save(); //! here we are saving the new client to the dB....the CLient.create() could also be used in place of this
+      },
+    },
+    // Delete a client
+  },
+});
+module.exports = new GraphQLSchema({ query: RootQuery, mutation })
