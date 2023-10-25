@@ -19,7 +19,7 @@ const Clients = () => {
           <th>Name</th>
           <th>Email</th>
           <th>Phone</th>
-          <th></th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>

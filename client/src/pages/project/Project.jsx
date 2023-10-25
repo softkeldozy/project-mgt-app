@@ -5,6 +5,7 @@ import ClientInfo from '../../components/clientInfo/ClientInfo';
 import { GET_PROJECT } from '../../components/queries/projectQueries';
 import DeleteProjectButton from '../../components/deleteProjBtn/DeleteProjectButton';
 import EditProject from '../../components/editProject/EditProject';
+import PopUpModal from '../../components/modalPopUp/PopUpModal';
 
 const Project = () => {
   const { id } = useParams();
@@ -22,7 +23,6 @@ const Project = () => {
 
         <h5 className='mt-3'>Project Status</h5>
         <p className="lead">{data.project.status}</p>
-
         {/* Displaying client info */}
         <ClientInfo client={data.project.client} />
         {/* Deleting Project */}
