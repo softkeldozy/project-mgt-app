@@ -5,7 +5,6 @@ import ClientInfo from '../../components/clientInfo/ClientInfo';
 import { GET_PROJECT } from '../../components/queries/projectQueries';
 import DeleteProjectButton from '../../components/deleteProjBtn/DeleteProjectButton';
 import EditProject from '../../components/editProject/EditProject';
-import PopUpModal from '../../components/modalPopUp/PopUpModal';
 
 const Project = () => {
   const { id } = useParams();

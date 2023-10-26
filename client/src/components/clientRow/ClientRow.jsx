@@ -39,7 +39,7 @@ const ClientRow = ({ client }) => {
         </td>
       </tr>
 
-      <Modal show={showModal} onHide={handleClose}>
+      <Modal centered show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Delete Item</Modal.Title>
         </Modal.Header>
